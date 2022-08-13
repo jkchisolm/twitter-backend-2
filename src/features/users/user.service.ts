@@ -1,10 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { AppDataSource } from '../../data-source';
 import User from '../../entities/User';
 
 const userRepository = AppDataSource.getRepository(User);
-
-const prisma = new PrismaClient();
 
 const getAllUsers = async () => {
   const users = await userRepository.find();
@@ -17,14 +14,12 @@ const register = async (
   handle: string,
   password: string,
 ) => {
-  const user = await prisma.user.create({
-    data: {
-      email,
-      name,
-      handle,
-      password,
-    },
-  });
+  const user = new User();
+  user.email = email;
+  user.handle = handle;
+  user.name = name;
+  user.password = password;
+  await userRepository.save(user);
   return user;
 };
 

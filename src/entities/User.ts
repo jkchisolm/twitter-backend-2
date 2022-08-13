@@ -13,13 +13,13 @@ class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('text', { unique: true })
   email: string;
 
   @Column('text')
   name: string;
 
-  @Column('text')
+  @Column('text', { unique: true })
   handle: string;
 
   @Column('text')

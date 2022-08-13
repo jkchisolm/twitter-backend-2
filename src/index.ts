@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import express from 'express';
 import session from 'express-session';
-import Redis from 'ioredis';
+import { createClient } from 'redis';
 import connectRedis from 'connect-redis';
 import postRouter from './features/posts/posts.router';
 import userRouter from './features/users/user.router';
+import authRouter from './features/auth/auth.router';
 import { AppDataSource } from './data-source';
 
 declare module 'express-session' {
@@ -19,20 +20,19 @@ declare module 'express-session' {
   }
 }
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: 6379,
-  connectTimeout: 10000,
-  lazyConnect: true,
-  tls: { rejectUnauthorized: false },
+const redisClient = createClient({
+  legacyMode: true,
+  url: process.env.REDIS_URL,
 });
+redisClient.connect();
+
 const RedisStore = connectRedis(session);
 const app = express();
 
 app.use(express.json());
 app.use(
   session({
-    store: new RedisStore({ client: redis }),
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
@@ -46,6 +46,7 @@ app.use(
 
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
+app.use('/auth', authRouter);
 
 AppDataSource.initialize()
   .then(() => {

@@ -13,10 +13,10 @@ const login = async (req: Request, res: Response) => {
         name: user.name,
         handle: user.handle,
       };
-      res.status(200).send(user);
+      return res.status(200).send(user);
     }
   } catch (err) {
-    res.status(400).send(err);
+    return res.status(400).send(err);
   }
 };
 

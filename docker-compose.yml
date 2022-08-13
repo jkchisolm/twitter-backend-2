@@ -21,6 +21,7 @@ services:
     depends_on:
       - db
       - redis
+    restart: on-failure
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -28,6 +29,8 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: twitter
       REDIS_HOST: redis
+      REDIS_URL: redis://redis:6379
+      SESSION_SECRET: twitterDBexpressSecret
     command: ['./wait-for-it.sh', 'db:5432', '--', 'node', 'dist/src/index.js']
 networks:
   webnet:

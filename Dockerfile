@@ -1,7 +1,7 @@
-FROM node:18-slim
+FROM node:18-alpine
 
-RUN apt-get update
-RUN apt-get install -y openssl
+# RUN apt-get update
+# RUN apt-get install -y openssl
 # RUN apt-get install -y postgresql-client
 
 # Create app directory
@@ -23,9 +23,6 @@ EXPOSE 4000
 
 # Expose port 8080
 EXPOSE 8080
-
-# Generate prisma client
-RUN npx prisma generate
 
 # Build server
 RUN npm run build
