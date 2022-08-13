@@ -16,26 +16,19 @@ const loginUser = async (email: string, password: string) => {
   return user;
 };
 
-// const registerUser = async (
-//   email: string,
-//   handle: string,
-//   password: string,
-//   name: string,
-// ) => {
-//   bcrypt.hash(password, 12, async (err, hash) => {
-//     if (err) {
-//       throw err;
-//     }
-//     const user = await prisma.user.create({
-//       data: {
-//         email,
-//         handle,
-//         password: hash,
-//         name,
-//       },
-//     });
-//     return user;
-//   });
-// };
+const registerUser = async (
+  email: string,
+  handle: string,
+  password: string,
+  name: string,
+) => {
+  const user = new User();
+  user.email = email;
+  user.handle = handle;
+  user.name = name;
+  user.password = password;
+  await userRepository.save(user);
+  return user;
+};
 
-export { loginUser };
+export { loginUser, registerUser };
