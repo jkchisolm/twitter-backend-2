@@ -46,4 +46,11 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-export { login, register };
+const getCurrentUser = (req: Request, res: Response) => {
+  if (req.session.user) {
+    return res.status(200).send(req.session.user);
+  }
+  return res.status(400).send('No user found');
+};
+
+export { login, register, getCurrentUser };
