@@ -23,6 +23,10 @@ declare module 'express-session' {
 const redisClient = createClient({
   legacyMode: true,
   url: process.env.REDIS_URL,
+  socket: {
+    tls: true,
+    rejectUnauthorized: false,
+  },
 });
 redisClient.connect();
 
