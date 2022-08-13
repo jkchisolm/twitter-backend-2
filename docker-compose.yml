@@ -5,11 +5,24 @@ services:
     container_name: postgres
     hostname: postgres
     ports:
-      - 5432:5432
+      # cannot use 5432, already in use
+      - 5433:5432
+    networks:
+      - webnet
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: twitterDB
+    restart: unless-stopped
+
+  redis-server:
+    image: redis:latest
+    container_name: redis-server
+    hostname: redis-server
+    ports:
+      - 6379:6379
+    networks:
+      - webnet
     restart: unless-stopped
 
   pgAdmin:
@@ -20,6 +33,8 @@ services:
       - postgres
     ports:
       - 5050:80
+    networks:
+      - webnet
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -34,8 +49,14 @@ services:
     command: bash -c "npx knex migrate:latest && npm run start"
     depends_on:
       - postgres
+      - redis-server
     ports:
-      - 4000:4000
+      - 4000:8080
+    networks:
+      - webnet
     restart: on-failure
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/twitterDB?schema=public
+      REDIS_URL: redis://redis-server:6379
+networks:
+  webnet:

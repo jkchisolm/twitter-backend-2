@@ -7,14 +7,14 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name').notNullable();
     table.string('handle').notNullable().unique();
     table.string('password').notNullable();
-    table.timestamp('created_at').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
   });
 
   await knex.schema.createTable('Post', (table) => {
     table.increments('id').primary();
     table.string('body').notNullable();
-    table.integer('author_id').references('id').inTable('User').notNullable();
-    table.timestamp('created_at').defaultTo(knex.fn.now());
+    table.integer('authorId').references('id').inTable('User').notNullable();
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
   });
 }
 
