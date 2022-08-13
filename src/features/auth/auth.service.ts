@@ -18,9 +18,9 @@ const loginUser = async (email: string, password: string) => {
 
 const registerUser = async (
   email: string,
+  name: string,
   handle: string,
   password: string,
-  name: string,
 ) => {
   const user = new User();
   user.email = email;

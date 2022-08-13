@@ -23,4 +23,23 @@ const register = async (
   return user;
 };
 
-export { getAllUsers, register };
+const editUser = async (
+  email: string,
+  name: string,
+  handle: string,
+  password: string,
+  id: number,
+) => {
+  const user = await userRepository.findOne({ where: { id } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  user.email = email;
+  user.handle = handle;
+  user.name = name;
+  user.password = password;
+  await userRepository.save(user);
+  return user;
+};
+
+export { getAllUsers, register, editUser };

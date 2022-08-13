@@ -14,4 +14,19 @@ const register = async (req: Request, res: Response) => {
   res.status(201).send(user);
 };
 
-export { getAllUsers, register };
+const editUser = async (req: Request, res: Response) => {
+  const { email, name, handle, password } = req.body;
+  let hashedPassword: string = '';
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 12);
+  }
+  const user = await userService.editUser(
+    email,
+    name,
+    handle,
+    hashedPassword,
+    Number(req.params.id),
+  );
+  res.status(201).send(user);
+};
+export { getAllUsers, register, editUser };
