@@ -1,62 +1,33 @@
-version: '3.9'
+version: '3.7'
 services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    hostname: postgres
-    ports:
-      # cannot use 5432, already in use
-      - 5433:5432
+  redis:
+    image: redis
+    networks:
+      - webnet
+  db:
+    image: postgres
     networks:
       - webnet
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: twitterDB
-    restart: unless-stopped
-
-  redis-server:
-    image: redis:latest
-    container_name: redis-server
-    hostname: redis-server
-    ports:
-      - 6379:6379
-    networks:
-      - webnet
-    restart: unless-stopped
-
-  pgAdmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgAdmin
-    hostname: pgAdmin
-    depends_on:
-      - postgres
-    ports:
-      - 5050:80
-    networks:
-      - webnet
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    restart: unless-stopped
-
-  twitter-api:
-    stdin_open: true
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: twitter-api
-    command: bash -c "npx knex migrate:latest && npm run start"
-    depends_on:
-      - postgres
-      - redis-server
+      POSTGRES_DB: twitter
+  web:
+    image: twitter-api:latest
     ports:
       - 4000:8080
     networks:
       - webnet
-    restart: on-failure
+    depends_on:
+      - db
+      - redis
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/twitterDB?schema=public
-      REDIS_URL: redis://redis-server:6379
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: twitter
+      REDIS_HOST: redis
+    command: ['./wait-for-it.sh', 'db:5432', '--', 'node', 'dist/src/index.js']
 networks:
   webnet:

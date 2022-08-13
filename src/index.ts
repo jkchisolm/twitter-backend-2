@@ -1,9 +1,11 @@
+import 'reflect-metadata';
 import express from 'express';
 import session from 'express-session';
 import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import postRouter from './features/posts/posts.router';
 import userRouter from './features/users/user.router';
+import { AppDataSource } from './data-source';
 
 declare module 'express-session' {
   // eslint-disable-next-line no-unused-vars
@@ -17,7 +19,11 @@ declare module 'express-session' {
   }
 }
 
-const redis = new Redis(process.env.REDIS_URL as string, {
+const redis = new Redis({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: 6379,
+  connectTimeout: 10000,
+  lazyConnect: true,
   tls: { rejectUnauthorized: false },
 });
 const RedisStore = connectRedis(session);
@@ -41,6 +47,12 @@ app.use(
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log(`Server listening on port ${process.env.PORT || 8080}`);
-});
+AppDataSource.initialize()
+  .then(() => {
+    app.listen(process.env.PORT || 8080, () => {
+      console.log(`Server listening on port ${process.env.PORT || 8080}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+  });

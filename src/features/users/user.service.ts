@@ -1,9 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { AppDataSource } from '../../data-source';
+import User from '../../entities/User';
+
+const userRepository = AppDataSource.getRepository(User);
 
 const prisma = new PrismaClient();
 
 const getAllUsers = async () => {
-  const users = await prisma.user.findMany({});
+  const users = await userRepository.find();
   return users;
 };
 

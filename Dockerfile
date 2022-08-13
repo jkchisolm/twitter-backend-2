@@ -13,6 +13,8 @@ COPY package*.json ./
 # Copy over rest of source code
 COPY . .
 
+RUN chmod +x ./wait-for-it.sh
+
 # Install dependencies
 RUN npm install
 
@@ -22,15 +24,8 @@ EXPOSE 4000
 # Expose port 8080
 EXPOSE 8080
 
-# # wait for postgres
-# RUN chmod +x ./wait-for-postgres.sh
-# RUN ./wait-for-postgres.sh postgres postgres
-
 # Generate prisma client
 RUN npx prisma generate
-
-# # Push schema to db
-# RUN npx prisma db push --preview-feature
 
 # Build server
 RUN npm run build
