@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: twitterDB
+    restart: unless-stopped
+
+  pgAdmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgAdmin
+    hostname: pgAdmin
+    depends_on:
+      - postgres
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+
+  twitter-api:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: twitter-api
+    command: bash -c "npx knex migrate:latest && npm run start"
+    depends_on:
+      - postgres
+    ports:
+      - 4000:4000
+    restart: on-failure
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/twitterDB?schema=public
