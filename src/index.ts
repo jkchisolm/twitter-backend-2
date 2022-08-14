@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express from 'express';
+import cors from 'cors';
 import session from 'express-session';
 import { createClient } from 'redis';
 import connectRedis from 'connect-redis';
@@ -33,6 +34,7 @@ redisClient.connect();
 const RedisStore = connectRedis(session);
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(
   session({
