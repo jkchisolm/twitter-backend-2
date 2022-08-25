@@ -1,0 +1,25 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Twitter-clone backend",
+    "version": "0.1.0",
+    "description": "Backend for the clone of the famous social media app."
+  },
+  "servers": {
+    "url": "http://localhost:4000/api"
+  },
+  "paths": {
+    "/test": {
+      "get": {
+        "summary": "Test endpoint",
+        "description": "Test endpoint",
+        "operationId": "test",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    }
+  }
+}

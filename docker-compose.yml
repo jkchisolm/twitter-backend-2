@@ -1,9 +1,5 @@
 version: '3.7'
 services:
-  redis:
-    image: redis
-    networks:
-      - webnet
   db:
     image: postgres
     networks:
@@ -20,17 +16,20 @@ services:
       - webnet
     depends_on:
       - db
-      - redis
     restart: on-failure
     environment:
+      PROD: 'false'
       DB_HOST: db
+      # DB_HOST: twitter-db.cv3rc6upc80x.us-west-1.rds.amazonaws.com
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: twitter
-      REDIS_HOST: redis
-      REDIS_URL: redis://redis:6379
       SESSION_SECRET: twitterDBexpressSecret
+      JWT_SECRET: this-is-a-jwt-secret-with-long-char-count
+      MAIL_USER: fleeter.support@gmail.com
+      MAIL_PASS: goldiscool1
     command: ['./wait-for-it.sh', 'db:5432', '--', 'node', 'dist/src/index.js']
+    # command: ['node', 'dist/src/index.js']
 networks:
   webnet:

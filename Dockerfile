@@ -1,9 +1,5 @@
 FROM node:18-alpine
 
-# RUN apt-get update
-# RUN apt-get install -y openssl
-# RUN apt-get install -y postgresql-client
-
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -12,6 +8,8 @@ COPY package*.json ./
 
 # Copy over rest of source code
 COPY . .
+
+RUN cat swagger.json
 
 RUN chmod +x ./wait-for-it.sh
 

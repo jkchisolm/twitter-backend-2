@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import Post from './entities/Post';
+import RefreshToken from './entities/RefreshToken';
 import User from './entities/User';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -12,5 +13,5 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [User, Post],
+  entities: [User, Post, RefreshToken],
 });

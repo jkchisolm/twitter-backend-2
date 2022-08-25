@@ -8,18 +8,19 @@ const getAllUsers = async () => {
   return users;
 };
 
-const register = async (
-  email: string,
-  name: string,
-  handle: string,
-  password: string,
-) => {
-  const user = new User();
-  user.email = email;
-  user.handle = handle;
-  user.name = name;
-  user.password = password;
-  await userRepository.save(user);
+const getUserByEmail = async (email: string) => {
+  const user = await userRepository.findOne({ where: { email } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+};
+
+const getUserById = async (id: number) => {
+  const user = await userRepository.find({ where: { id } });
+  if (!user) {
+    return null;
+  }
   return user;
 };
 
@@ -42,4 +43,4 @@ const editUser = async (
   return user;
 };
 
-export { getAllUsers, register, editUser };
+export { getAllUsers, getUserByEmail, getUserById, editUser };

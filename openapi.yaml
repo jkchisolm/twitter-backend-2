@@ -1,0 +1,33 @@
+openapi: '3.0.2'
+info:
+  title: Twitter-clone backend
+  version: '0.1.0'
+  description: Backend for the clone of the famous social media app.
+servers:
+  - url: http://localhost:4000/api/
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      description: 'Gets a list of every user'
+      responses:
+        '200':
+          description: Every user on the site
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - userId
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    handle:
+                      type: string
+                    password:
+                      type: string

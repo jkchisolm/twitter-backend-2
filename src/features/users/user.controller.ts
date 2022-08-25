@@ -7,13 +7,6 @@ const getAllUsers = async (req: Request, res: Response) => {
   res.status(200).send(users);
 };
 
-const register = async (req: Request, res: Response) => {
-  const { email, name, handle, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 12);
-  const user = await userService.register(email, name, handle, hashedPassword);
-  res.status(201).send(user);
-};
-
 const editUser = async (req: Request, res: Response) => {
   const { email, name, handle, password } = req.body;
   let hashedPassword: string = '';
@@ -29,4 +22,4 @@ const editUser = async (req: Request, res: Response) => {
   );
   res.status(201).send(user);
 };
-export { getAllUsers, register, editUser };
+export { getAllUsers, editUser };
