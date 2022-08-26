@@ -15,39 +15,20 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
   deploy:
       runs-on: ubuntu-latest
       
       steps:
-        - name: CapRover Deploy
-        # You may pin to the exact commit or the version.
-        # uses: AlexxNB/caprover-action@45fdf55f3213582285394908e8a3a0d2df41e21d
-          uses: AlexxNB/caprover-action@v1
+        - name: CapRover App Deploy
+          # You may pin to the exact commit or the version.
+          # uses: floms/action-caprover@205a0ab0bd4edbc5c1472365dcc127344162d15f
+          uses: floms/action-caprover@v1
           with:
-            # CapRover admin panel URL. Ex. https://captain.root.domain.com
-            server: https://captain.server.joshuachisolmserver.com
-            # CapRover admin password. Use $\{{ secrets.CAPROVER_PASSWORD }} for better security.
+            # CapRover machine url i.e., https://captain.your-domain.com
+            host: https://captain.server.joshuachisolmserver.com
+            # CapRover admin password. Use secret for more security
             password: ${{ secrets.CAPROVER_PASSWORD }}
-            # Application name on the CapRover server. Must exists.
-            appname: twitter-api
-            # Branch which will be deployed
-            branch: main # optional, default is master
+            # App name on CapRover server
+            app: twitter-api
+            # Branch to be deployed
+            branch: main # optional
