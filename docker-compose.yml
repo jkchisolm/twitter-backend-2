@@ -11,13 +11,14 @@ services:
   web:
     image: twitter-api:latest
     ports:
-      - 4000:8080
+      - 4000:4000
     networks:
       - webnet
     depends_on:
       - db
     restart: on-failure
     environment:
+      # PORT: 4000
       PROD: 'false'
       DB_HOST: db
       # DB_HOST: twitter-db.cv3rc6upc80x.us-west-1.rds.amazonaws.com
