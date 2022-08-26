@@ -46,7 +46,7 @@ jobs:
             # CapRover admin panel URL. Ex. https://captain.root.domain.com
             server: https://captain.server.joshuachisolmserver.com
             # CapRover admin password. Use $\{{ secrets.CAPROVER_PASSWORD }} for better security.
-            password: $\{{ secrets.CAPROVER_PASSWORD }}
+            password: ${{ secrets.CAPROVER_PASSWORD }}
             # Application name on the CapRover server. Must exists.
             appname: twitter-api
             # Branch which will be deployed
