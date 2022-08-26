@@ -24,9 +24,9 @@ app.use(cors());
 
 app.all('*').use(deserializeUser);
 
-app.use('/posts', postRouter);
-app.use('/users', userRouter);
-app.use('/auth', authRouter);
+app.use('/api/posts', postRouter);
+app.use('/api/users', userRouter);
+app.use('/api/auth', authRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 AppDataSource.initialize()
