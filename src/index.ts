@@ -31,8 +31,8 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 AppDataSource.initialize()
   .then(() => {
-    app.listen(process.env.PORT || 8080, () => {
-      console.log(`Server listening on port ${process.env.PORT || 8080}`);
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server listening on port ${process.env.PORT || 3000}`);
     });
   })
   .catch((err) => {
