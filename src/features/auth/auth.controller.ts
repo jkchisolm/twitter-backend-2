@@ -127,7 +127,21 @@ const sendEmailConfirmation = async (req: Request, res: Response) => {
   }
 };
 
-const confirmEmail = () => {};
+const confirmEmail = async (req: Request, res: Response) => {
+  const { code } = req.query;
+
+  try {
+    const verificationCode = await authService.verifyEmailConfirmation(
+      code as string,
+    );
+    if (!verificationCode) {
+      return res.status(400).send('Invalid code');
+    }
+    return res.status(200).send('Email confirmed');
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
 
 export {
   login,

@@ -121,10 +121,23 @@ const sendConfirmationEmail = async (email: string) => {
     });
 };
 
+const verifyEmailConfirmation = async (code: string) => {
+  const verificationCode = await VerificationCodeRepository.findOne({
+    where: { code, type: 'Register' },
+  });
+  if (!verificationCode) {
+    return false;
+  }
+  // destroy code after use
+  await VerificationCodeRepository.delete(verificationCode.id);
+  return verificationCode;
+};
+
 export {
   loginUser,
   registerUser,
   storeRefreshToken,
   getRefreshToken,
   sendConfirmationEmail,
+  verifyEmailConfirmation,
 };
