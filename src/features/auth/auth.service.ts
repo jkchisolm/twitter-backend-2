@@ -1,34 +1,15 @@
 import bcrypt from 'bcryptjs';
-// import nodemailer from 'nodemailer';
-// import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import sgMail from '@sendgrid/mail';
 import { AppDataSource } from '../../data-source';
 import RefreshToken from '../../entities/RefreshToken';
 import User from '../../entities/User';
+import VerificationCode from '../../entities/VerificationCode';
 
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
-
-// const credentials = {
-//   host: 'smtp.gmail.com',
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: process.env.MAIL_USER,
-//     pass: process.env.MAIL_PASS,
-//   },
-// };
-
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     type: 'OAuth2',
-//     user: process.env.MAIL_USER,
-//     pass: process.env.MAIL_PASS,
-//     clientId: process.env.MAIL_CLIENT_ID,
-//     clientSecret: process.env.MAIL_CLIENT_SECRET,
-//     refreshToken: process.env.MAIL_REFRESH_TOKEN,
-//   },
-// } as SMTPTransport.Options);
+const VerificationCodeRepository =
+  AppDataSource.getRepository(VerificationCode);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 const loginUser = async (email: string, password: string) => {
   const user = await userRepository.findOne({ where: { email } });
@@ -91,11 +72,44 @@ const getRefreshToken = async (userId: number) => {
   return token;
 };
 
-// const sendConfirmationEmail = async (email: string) => {
-//   const contacts = {
-//     from: process.env.MAIL_USER,
-//     to: email,
-//   };
-// };
+const sendConfirmationEmail = async (email: string) => {
+  const code = new VerificationCode();
+  code.code = Math.floor(Math.random() * 1000000).toString();
+  code.type = 'Register';
+  VerificationCodeRepository.save(code);
 
-export { loginUser, registerUser, storeRefreshToken, getRefreshToken };
+  const msg = {
+    to: email,
+    from: 'mail@server.joshuachisolmserver.com',
+    subject: 'Confirm your email',
+    text: `Your confirmation code is ${code.code}`,
+    html: `<strong>Your confirmation code is ${code.code}</strong>`,
+  };
+  try {
+    await sgMail.send(msg);
+    return { success: true, message: 'Email sent' };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+};
+
+const verifyEmailConfirmation = async (code: string) => {
+  const verificationCode = await VerificationCodeRepository.findOne({
+    where: { code, type: 'Register' },
+  });
+  if (!verificationCode) {
+    return false;
+  }
+  // destroy code after use
+  await VerificationCodeRepository.delete(verificationCode.id);
+  return verificationCode;
+};
+
+export {
+  loginUser,
+  registerUser,
+  storeRefreshToken,
+  getRefreshToken,
+  sendConfirmationEmail,
+  verifyEmailConfirmation,
+};

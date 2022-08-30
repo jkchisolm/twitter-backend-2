@@ -110,19 +110,38 @@ const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 const sendEmailConfirmation = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { email } = req.query;
   try {
     // check if user already exists
-    const user = await userService.getUserByEmail(email);
+    const user = await userService.getUserByEmail(email as string);
     if (user) {
       return res.status(400).send('User already exists');
     }
+    const result = await authService.sendConfirmationEmail(email as string);
+    if (result.success) {
+      return res.status(200).send('Email confirmation sent');
+    }
+    return res.status(400).send('Something went wrong');
   } catch (err) {
     return res.status(400).send(err);
   }
 };
 
-const confirmEmail = () => {};
+const confirmEmail = async (req: Request, res: Response) => {
+  const { code } = req.query;
+
+  try {
+    const verificationCode = await authService.verifyEmailConfirmation(
+      code as string,
+    );
+    if (!verificationCode) {
+      return res.status(400).send('Invalid code');
+    }
+    return res.status(200).send('Email confirmed');
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
 
 export {
   login,
