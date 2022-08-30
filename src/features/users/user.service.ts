@@ -11,7 +11,7 @@ const getAllUsers = async () => {
 const getUserByEmail = async (email: string) => {
   const user = await userRepository.findOne({ where: { email } });
   if (!user) {
-    throw new Error('User not found');
+    return null;
   }
   return user;
 };

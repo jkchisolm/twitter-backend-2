@@ -1,12 +1,17 @@
 import bcrypt from 'bcryptjs';
-// import nodemailer from 'nodemailer';
-// import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import sgMail, { ResponseError } from '@sendgrid/mail';
 import { AppDataSource } from '../../data-source';
 import RefreshToken from '../../entities/RefreshToken';
 import User from '../../entities/User';
+import VerificationCode from '../../entities/VerificationCode';
 
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
+const VerificationCodeRepository =
+  AppDataSource.getRepository(VerificationCode);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 // const credentials = {
 //   host: 'smtp.gmail.com',
@@ -18,17 +23,17 @@ const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 //   },
 // };
 
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     type: 'OAuth2',
-//     user: process.env.MAIL_USER,
-//     pass: process.env.MAIL_PASS,
-//     clientId: process.env.MAIL_CLIENT_ID,
-//     clientSecret: process.env.MAIL_CLIENT_SECRET,
-//     refreshToken: process.env.MAIL_REFRESH_TOKEN,
-//   },
-// } as SMTPTransport.Options);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    type: 'OAuth2',
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+    clientId: process.env.MAIL_CLIENT_ID,
+    clientSecret: process.env.MAIL_CLIENT_SECRET,
+    refreshToken: process.env.MAIL_REFRESH_TOKEN,
+  },
+} as SMTPTransport.Options);
 
 const loginUser = async (email: string, password: string) => {
   const user = await userRepository.findOne({ where: { email } });
@@ -91,11 +96,35 @@ const getRefreshToken = async (userId: number) => {
   return token;
 };
 
-// const sendConfirmationEmail = async (email: string) => {
-//   const contacts = {
-//     from: process.env.MAIL_USER,
-//     to: email,
-//   };
-// };
+const sendConfirmationEmail = async (email: string) => {
+  const code = new VerificationCode();
+  code.code = Math.floor(Math.random() * 1000000).toString();
+  code.type = 'Register';
+  VerificationCodeRepository.save(code);
 
-export { loginUser, registerUser, storeRefreshToken, getRefreshToken };
+  const msg = {
+    to: email,
+    from: 'mail@server.joshuachisolmserver.com',
+    subject: 'Confirm your email',
+    text: `Your confirmation code is ${code.code}`,
+    html: `<strong>Your confirmation code is ${code.code}</strong>`,
+  };
+
+  sgMail
+    .send(msg)
+    .then((response) => {
+      console.log(response[0].statusCode);
+      console.log(response[0].headers);
+    })
+    .catch((err: ResponseError) => {
+      console.error(err.response.body);
+    });
+};
+
+export {
+  loginUser,
+  registerUser,
+  storeRefreshToken,
+  getRefreshToken,
+  sendConfirmationEmail,
+};

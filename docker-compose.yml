@@ -19,17 +19,20 @@ services:
     restart: on-failure
     environment:
       # PORT: 4000
-      PROD: 'false'
-      DB_HOST: db
-      # DB_HOST: twitter-db.cv3rc6upc80x.us-west-1.rds.amazonaws.com
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: twitter
+      PROD: ${PROD}
+      SERVER_PORT: ${SERVER_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       SESSION_SECRET: twitterDBexpressSecret
-      JWT_SECRET: this-is-a-jwt-secret-with-long-char-count
-      MAIL_USER: fleeter.support@gmail.com
-      MAIL_PASS: goldiscool1
+      JWT_SECRET: ${JWT_SECRET}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      MAIL_CLIENT_ID: ${MAIL_CLIENT_ID}
+      MAIL_CLIENT_SECRET: ${MAIL_CLIENT_SECRET}
+      MAIL_REFRESH_TOKEN: ${MAIL_REFRESH_TOKEN}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
     command: ['./wait-for-it.sh', 'db:5432', '--', 'node', 'dist/src/index.js']
     # command: ['node', 'dist/src/index.js']
 networks:
