@@ -1,7 +1,5 @@
 import bcrypt from 'bcryptjs';
-import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import sgMail, { ResponseError } from '@sendgrid/mail';
+import sgMail from '@sendgrid/mail';
 import { AppDataSource } from '../../data-source';
 import RefreshToken from '../../entities/RefreshToken';
 import User from '../../entities/User';
@@ -12,28 +10,6 @@ const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const VerificationCodeRepository =
   AppDataSource.getRepository(VerificationCode);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
-
-// const credentials = {
-//   host: 'smtp.gmail.com',
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: process.env.MAIL_USER,
-//     pass: process.env.MAIL_PASS,
-//   },
-// };
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    type: 'OAuth2',
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-    clientId: process.env.MAIL_CLIENT_ID,
-    clientSecret: process.env.MAIL_CLIENT_SECRET,
-    refreshToken: process.env.MAIL_REFRESH_TOKEN,
-  },
-} as SMTPTransport.Options);
 
 const loginUser = async (email: string, password: string) => {
   const user = await userRepository.findOne({ where: { email } });
@@ -109,16 +85,12 @@ const sendConfirmationEmail = async (email: string) => {
     text: `Your confirmation code is ${code.code}`,
     html: `<strong>Your confirmation code is ${code.code}</strong>`,
   };
-
-  sgMail
-    .send(msg)
-    .then((response) => {
-      console.log(response[0].statusCode);
-      console.log(response[0].headers);
-    })
-    .catch((err: ResponseError) => {
-      console.error(err.response.body);
-    });
+  try {
+    await sgMail.send(msg);
+    return { success: true, message: 'Email sent' };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
 };
 
 const verifyEmailConfirmation = async (code: string) => {

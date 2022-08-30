@@ -113,15 +113,15 @@ const sendEmailConfirmation = async (req: Request, res: Response) => {
   const { email } = req.query;
   try {
     // check if user already exists
-    console.log('Checking if user exists with email', email);
     const user = await userService.getUserByEmail(email as string);
     if (user) {
       return res.status(400).send('User already exists');
     }
-    console.log('Sending email confirmation');
-    await authService.sendConfirmationEmail(email as string);
-    console.log('Email confirmation sent?');
-    return res.status(200).send('Email confirmation sent');
+    const result = await authService.sendConfirmationEmail(email as string);
+    if (result.success) {
+      return res.status(200).send('Email confirmation sent');
+    }
+    return res.status(400).send('Something went wrong');
   } catch (err) {
     return res.status(400).send(err);
   }
