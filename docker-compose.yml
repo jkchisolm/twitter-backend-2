@@ -27,11 +27,6 @@ services:
       DB_NAME: ${DB_NAME}
       SESSION_SECRET: twitterDBexpressSecret
       JWT_SECRET: ${JWT_SECRET}
-      MAIL_USER: ${MAIL_USER}
-      MAIL_PASS: ${MAIL_PASS}
-      MAIL_CLIENT_ID: ${MAIL_CLIENT_ID}
-      MAIL_CLIENT_SECRET: ${MAIL_CLIENT_SECRET}
-      MAIL_REFRESH_TOKEN: ${MAIL_REFRESH_TOKEN}
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
     command: ['./wait-for-it.sh', 'db:5432', '--', 'node', 'dist/src/index.js']
     # command: ['node', 'dist/src/index.js']
